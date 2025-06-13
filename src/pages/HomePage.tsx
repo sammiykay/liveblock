@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Users, Zap, MessageSquare, Edit3 } from 'lucide-react';
+import { Users, Zap, MessageSquare, Edit3, User, FolderOpen } from 'lucide-react';
+import { AuthModal } from '../components/AuthModal';
+import { ProjectsModal } from '../components/ProjectsModal';
+import { useAuth } from '../hooks/useAuth';
 
 export function HomePage() {
   const [roomId, setRoomId] = useState('');
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showProjectsModal, setShowProjectsModal] = useState(false);
   const navigate = useNavigate();
+  const { user, signOut } = useAuth();
 
   const handleJoinRoom = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,10 +26,64 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-16">
+      {/* Header */}
+      <header className="container mx-auto px-4 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center">
+              <Edit3 className="text-white" size={24} />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Canvas</h1>
+              <p className="text-sm text-gray-500">by sammiykay</p>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {user ? (
+              <>
+                <button
+                  onClick={() => setShowProjectsModal(true)}
+                  className="flex items-center px-4 py-2 bg-white text-gray-700 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors"
+                >
+                  <FolderOpen size={16} className="mr-2" />
+                  My Projects
+                </button>
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <User className="text-blue-600" size={16} />
+                  </div>
+                  <span className="text-sm text-gray-700">{user.email}</span>
+                  <button
+                    onClick={signOut}
+                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowAuthModal(true)}
+                className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors"
+              >
+                <User size={16} className="mr-2" />
+                Sign In
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto text-center">
           {/* Hero section */}
           <div className="mb-16">
+            <div className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full text-sm font-medium text-gray-700 mb-6">
+              <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+              Built by sammiykay
+            </div>
+            
             <h1 className="text-5xl font-bold text-gray-900 mb-6 leading-tight">
               Collaborative Design Canvas
             </h1>
@@ -120,8 +180,22 @@ export function HomePage() {
               </div>
             </div>
           </div>
+
+          {/* Footer */}
+          <footer className="mt-16 pt-8 border-t border-gray-200">
+            <div className="flex items-center justify-center space-x-2 text-gray-500">
+              <span>Crafted with</span>
+              <span className="text-red-500">♥</span>
+              <span>by</span>
+              <span className="font-semibold text-gray-700">sammiykay</span>
+            </div>
+          </footer>
         </div>
       </div>
+
+      {/* Modals */}
+      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <ProjectsModal isOpen={showProjectsModal} onClose={() => setShowProjectsModal(false)} />
     </div>
   );
 }
